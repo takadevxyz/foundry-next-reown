@@ -1,9 +1,6 @@
 'use client';
 
-
-import {
-  Suspense
-} from 'react';
+import { Suspense } from 'react';
 import { ConnectButton } from '@/components/ConnectButton';
 import { WalletBalance } from '@/components/WalletBalance';
 import { SignMessage } from '@/components/SignMessage';

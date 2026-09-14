@@ -2,58 +2,75 @@
 
 import { createAppKit } from '@reown/appkit/react';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { mainnet, sepolia } from '@reown/appkit/networks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { type ReactNode } from 'react';
-import { cookieStorage, createStorage, cookieToInitialState, WagmiProvider, type Config, http } from 'wagmi';
+import {
+  cookieStorage,
+  createStorage,
+  cookieToInitialState,
+  WagmiProvider,
+  type Config,
+} from 'wagmi';
 import { networks, projectId } from '@/lib/config';
-import { kryvora_network_testnet } from '@/lib/networks';
 
 const queryClient = new QueryClient();
 
 export const wagmiAdapter = new WagmiAdapter({
-    storage: createStorage({
-        storage: cookieStorage,
-    }),
-    ssr: true,
-    projectId,
-    networks,
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
+  ssr: true,
+  projectId,
+  networks,
 });
 
 createAppKit({
-    adapters: [wagmiAdapter],
-    networks,
-    projectId,
-    metadata: {
-        name: 'Foundry Next Reown Monorepo',
-        description: 'Starter Kit Monolith',
-        url: typeof window !== 'undefined' ? window.location.origin : 'https://github.com/takadevxyz/foundry-next-reown.git',
-        icons: ['https://avatars.githubusercontent.com/takadevxyz'],
-    },
-    themeMode: 'dark',
-    features: {
-        analytics: false,
-        email: false,
-        socials: false,
-        swaps: false,
-        send: false,
-        onramp: false,
-        history: false,
-    },
-    allWallets: 'HIDE',
-    chainImages: {
-        73829164: 'https://kryvora.network/kryvora-brand-logo.png?v=3',
-    }
+  adapters: [wagmiAdapter],
+  networks,
+  projectId,
+  metadata: {
+    name: 'Foundry Next Reown Monorepo',
+    description: 'Starter Kit Monolith',
+    url:
+      typeof window !== 'undefined'
+        ? window.location.origin
+        : 'https://github.com/takadevxyz/foundry-next-reown.git',
+    icons: ['https://avatars.githubusercontent.com/takadevxyz'],
+  },
+  themeMode: 'dark',
+  features: {
+    analytics: false,
+    email: false,
+    socials: false,
+    swaps: false,
+    send: false,
+    onramp: false,
+    history: false,
+  },
+  allWallets: 'HIDE',
+  chainImages: {
+    73829164: 'https://kryvora.network/kryvora-brand-logo.png?v=3',
+  },
 });
 
-export function Web3ModalProvider({ children, cookies }: { children: ReactNode; cookies?: string | null }) {
-    const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies ?? null);
+export function Web3ModalProvider({
+  children,
+  cookies,
+}: {
+  children: ReactNode;
+  cookies?: string | null;
+}) {
+  const initialState = cookieToInitialState(
+    wagmiAdapter.wagmiConfig as Config,
+    cookies ?? null,
+  );
 
-    return (
-        <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
-            <QueryClientProvider client={queryClient}>
-                {children}
-            </QueryClientProvider>
-        </WagmiProvider>
-    );
+  return (
+    <WagmiProvider
+      config={wagmiAdapter.wagmiConfig as Config}
+      initialState={initialState}
+    >
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </WagmiProvider>
+  );
 }
