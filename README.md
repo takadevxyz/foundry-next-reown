@@ -114,6 +114,36 @@ export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [
 - Message Signing: Built-in components for wallet signature.
 - Optimized Polling: Dynamic block tracking powered by TanStack Query and Wagmi actions.
 
+## Custom Development & Services
+
+Building a custom DeFi Protocol, RWA Dashboard, or Cross-chain Bridge and need an experienced developer to scale this starter kit?
+I specialize in Foundry, Next.js, and Reown AppKit integrations. Available for:
+
+- Full-stack dApp Development (Smart Contracts & Frontend)
+- Custom Chain / RPC Configuration & Wagmi Setup
+- Smart Contract Testing & Hardening (Foundry Suite)
+- Web3 UI/UX Optimization & Bug Fixing
+
+### Get in Touch:
+
+- Twitter / X: [takadevxyz](https://x.com/takadevxyz)
+- Website: [https://takadevxyz.vercel.app/](https://takadevxyz.vercel.app/)
+- Email / Inquiry: Drop a DM on X or open a discussion thread here!
+
+## Support & Sponsorship
+
+If this template saved you hours of setup time, consider supporting the continuous maintenance of this project!
+
+- EVM Tip Jar: 
+```bash
+0x1CCE1ba2a17279Cc90212b9f3B99aeAAB7eB472c
+```
+- Solana Tip Jar: 
+```bash
+4SfApexfy88UaTKxp25Uxy7KVBNTDE6rjcU4joCSwZJ8
+```
+- GitHub Sponsors: Star ⭐ this repo & share it with fellow Web3 devs!
+
 ## License
 
 MIT
