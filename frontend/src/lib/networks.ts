@@ -24,4 +24,7 @@ const kryvora_network_testnet = defineChain({
   },
 });
 
-export const networksList = [kryvora_network_testnet, sepolia] as [AppKitNetwork, ...AppKitNetwork[]]
+export const networksList = [kryvora_network_testnet, sepolia] as [
+  AppKitNetwork,
+  ...AppKitNetwork[],
+];

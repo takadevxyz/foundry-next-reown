@@ -1,12 +1,9 @@
 'use client';
 
 import { createAppKit } from '@reown/appkit/react';
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { type ReactNode } from 'react';
 import {
-  cookieStorage,
-  createStorage,
   cookieToInitialState,
   WagmiProvider,
   type Config,
