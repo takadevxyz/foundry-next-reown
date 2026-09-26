@@ -12,17 +12,9 @@ import {
   type Config,
 } from 'wagmi';
 import { networks, projectId } from '@/lib/config';
+import { wagmiAdapter } from '@/lib/wagmi';
 
 const queryClient = new QueryClient();
-
-export const wagmiAdapter = new WagmiAdapter({
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
-  ssr: true,
-  projectId,
-  networks,
-});
 
 createAppKit({
   adapters: [wagmiAdapter],
