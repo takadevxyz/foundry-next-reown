@@ -2,4 +2,5 @@ packages:
   - 'frontend'
 allowBuilds:
   '@reown/appkit': true
+  esbuild: true
   unrs-resolver: true

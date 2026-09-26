@@ -134,14 +134,18 @@ I specialize in Foundry, Next.js, and Reown AppKit integrations. Available for:
 
 If this template saved you hours of setup time, consider supporting the continuous maintenance of this project!
 
-- EVM Tip Jar: 
+- EVM Tip Jar:
+
 ```bash
 0x1CCE1ba2a17279Cc90212b9f3B99aeAAB7eB472c
 ```
-- Solana Tip Jar: 
+
+- Solana Tip Jar:
+
 ```bash
 4SfApexfy88UaTKxp25Uxy7KVBNTDE6rjcU4joCSwZJ8
 ```
+
 - GitHub Sponsors: Star ⭐ this repo & share it with fellow Web3 devs!
 
 ## License

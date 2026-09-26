@@ -9,7 +9,10 @@
     "lint": "pnpm --filter frontend lint",
     "lint:fix": "pnpm --filter frontend lint:fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "build:contracts": "cd contracts && forge build",
+    "wagmi": "pnpm --filter frontend wagmi",
+    "dev:all": "pnpm build:contracts && pnpm wagmi && pnpm --filter frontend dev"
   },
   "devDependencies": {
     "dotenv": "^17.4.2",

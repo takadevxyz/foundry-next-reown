@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "wagmi": "wagmi generate"
   },
   "dependencies": {
     "@reown/appkit": "^1.8.23",
@@ -35,6 +36,7 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.69.0",
     "@typescript-eslint/parser": "^8.69.0",
+    "@wagmi/cli": "^2.10.0",
     "dotenv": "^17.4.2",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-unused-imports": "^4.4.1",
