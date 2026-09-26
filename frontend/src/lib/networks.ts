@@ -1,6 +1,7 @@
 import { defineChain } from '@reown/appkit/networks';
+import { sepolia, type AppKitNetwork } from '@reown/appkit/networks';
 
-export const kryvora_network_testnet = defineChain({
+const kryvora_network_testnet = defineChain({
   id: 73829164,
   name: 'Kryvora Network Testnet',
   caipNetworkId: 'eip155:73829164',
@@ -22,3 +23,5 @@ export const kryvora_network_testnet = defineChain({
     },
   },
 });
+
+export const networksList = [kryvora_network_testnet, sepolia] as [AppKitNetwork, ...AppKitNetwork[]]
