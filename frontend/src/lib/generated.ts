@@ -2,7 +2,7 @@ import {
   createUseReadContract,
   createUseWriteContract,
   createUseSimulateContract,
-} from 'wagmi/codegen'
+} from 'wagmi/codegen';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Counter
@@ -30,7 +30,7 @@ export const counterAbi = [
     outputs: [],
     stateMutability: 'nonpayable',
   },
-] as const
+] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -41,7 +41,7 @@ export const counterAbi = [
  */
 export const useReadCounter = /*#__PURE__*/ createUseReadContract({
   abi: counterAbi,
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link counterAbi}__ and `functionName` set to `"number"`
@@ -49,14 +49,14 @@ export const useReadCounter = /*#__PURE__*/ createUseReadContract({
 export const useReadCounterNumber = /*#__PURE__*/ createUseReadContract({
   abi: counterAbi,
   functionName: 'number',
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link counterAbi}__
  */
 export const useWriteCounter = /*#__PURE__*/ createUseWriteContract({
   abi: counterAbi,
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link counterAbi}__ and `functionName` set to `"increment"`
@@ -64,7 +64,7 @@ export const useWriteCounter = /*#__PURE__*/ createUseWriteContract({
 export const useWriteCounterIncrement = /*#__PURE__*/ createUseWriteContract({
   abi: counterAbi,
   functionName: 'increment',
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link counterAbi}__ and `functionName` set to `"setNumber"`
@@ -72,14 +72,14 @@ export const useWriteCounterIncrement = /*#__PURE__*/ createUseWriteContract({
 export const useWriteCounterSetNumber = /*#__PURE__*/ createUseWriteContract({
   abi: counterAbi,
   functionName: 'setNumber',
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link counterAbi}__
  */
 export const useSimulateCounter = /*#__PURE__*/ createUseSimulateContract({
   abi: counterAbi,
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link counterAbi}__ and `functionName` set to `"increment"`
@@ -88,7 +88,7 @@ export const useSimulateCounterIncrement =
   /*#__PURE__*/ createUseSimulateContract({
     abi: counterAbi,
     functionName: 'increment',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link counterAbi}__ and `functionName` set to `"setNumber"`
@@ -97,4 +97,4 @@ export const useSimulateCounterSetNumber =
   /*#__PURE__*/ createUseSimulateContract({
     abi: counterAbi,
     functionName: 'setNumber',
-  })
+  });
