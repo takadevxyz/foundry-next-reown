@@ -1,28 +1,17 @@
 'use client';
 
 import { createAppKit } from '@reown/appkit/react';
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { type ReactNode } from 'react';
 import {
-  cookieStorage,
-  createStorage,
   cookieToInitialState,
   WagmiProvider,
   type Config,
 } from 'wagmi';
 import { networks, projectId } from '@/lib/config';
+import { wagmiAdapter } from '@/lib/wagmi';
 
 const queryClient = new QueryClient();
-
-export const wagmiAdapter = new WagmiAdapter({
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
-  ssr: true,
-  projectId,
-  networks,
-});
 
 createAppKit({
   adapters: [wagmiAdapter],

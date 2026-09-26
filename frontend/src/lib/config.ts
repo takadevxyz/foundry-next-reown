@@ -1,5 +1,5 @@
-import { sepolia, type AppKitNetwork } from '@reown/appkit/networks';
-import { kryvora_network_testnet } from '@/lib/networks';
+import { type AppKitNetwork } from '@reown/appkit/networks';
+import { networksList } from '@/lib/networks';
 
 // Get projectId from https://cloud.reown.com
 export const projectId =
@@ -9,7 +9,4 @@ if (!projectId) {
   throw new Error('Project ID is not defined');
 }
 
-export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [
-  kryvora_network_testnet,
-  sepolia,
-];
+export const networks: [AppKitNetwork, ...AppKitNetwork[]] = networksList;
