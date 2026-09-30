@@ -30,7 +30,18 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Toaster position='bottom-right'/>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            classNames: {
+              toast: '!bg-neutral-900 !border-neutral-800 !text-white font-mono rounded-lg shadow-xl',
+              description: '!text-neutral-400 text-xs',
+              error: '!border-red-500/40 !text-red-400',
+              success: '!border-emerald-500/40 !text-emerald-400',
+              info: '!border-blue-500/40 !text-blue-400',
+            },
+          }}
+        />
         <Web3ModalProvider>
           {children}
         </Web3ModalProvider>
