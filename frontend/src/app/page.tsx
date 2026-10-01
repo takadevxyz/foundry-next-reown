@@ -5,6 +5,7 @@ import { ConnectButton } from '@/components/ConnectButton';
 import { WalletBalance } from '@/components/WalletBalance';
 import { SignMessage } from '@/components/SignMessage';
 import { BlockNumberQuery } from '@/components/BlockNumberQuery';
+import { IncrementCounterButton } from '@/components/Counter';
 
 interface HomePage {
   params: Promise<{
@@ -38,6 +39,7 @@ function PageContent(props: HomePage) {
 
         <section className="space-y-4">
           <SignMessage />
+          <IncrementCounterButton/>
           <BlockNumberQuery />
         </section>
       </div>
