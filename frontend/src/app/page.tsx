@@ -39,7 +39,7 @@ function PageContent(props: HomePage) {
 
         <section className="space-y-4">
           <SignMessage />
-          <IncrementCounterButton/>
+          <IncrementCounterButton />
           <BlockNumberQuery />
         </section>
       </div>

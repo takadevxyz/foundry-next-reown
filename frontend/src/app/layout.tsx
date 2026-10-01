@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Web3ModalProvider } from '@/context/Web3Modal';
-import { Toaster } from 'sonner'
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -34,7 +34,8 @@ export default function RootLayout({
           position="bottom-right"
           toastOptions={{
             classNames: {
-              toast: '!bg-neutral-900 !border-neutral-800 !text-white font-mono rounded-lg shadow-xl',
+              toast:
+                '!bg-neutral-900 !border-neutral-800 !text-white font-mono rounded-lg shadow-xl',
               description: '!text-neutral-400 text-xs',
               error: '!border-red-500/40 !text-red-400',
               success: '!border-emerald-500/40 !text-emerald-400',
@@ -42,9 +43,7 @@ export default function RootLayout({
             },
           }}
         />
-        <Web3ModalProvider>
-          {children}
-        </Web3ModalProvider>
+        <Web3ModalProvider>{children}</Web3ModalProvider>
       </body>
     </html>
   );

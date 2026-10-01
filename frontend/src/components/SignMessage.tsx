@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useSignMessage, useAccount } from 'wagmi';
-import { toast } from 'sonner'
+import { toast } from 'sonner';
 
 export function SignMessage() {
   const { isConnected } = useAccount();
@@ -26,17 +26,17 @@ export function SignMessage() {
             { message },
             {
               onError: (error) => {
-                const isUserRejected = error.message.includes('User rejected')
+                const isUserRejected = error.message.includes('User rejected');
                 toast.error(
                   isUserRejected
                     ? 'User rejected signing message'
-                    : error.message.slice(0, 100)
-                )
+                    : error.message.slice(0, 100),
+                );
               },
               onSuccess: () => {
-                toast.success('Message signed successfully!')
+                toast.success('Message signed successfully!');
               },
-            }
+            },
           )
         }
         disabled={isPending}
