@@ -87,9 +87,9 @@ export function useWeb3Toast({
         description: 'Waiting for block confirmation on-chain...',
         action: explorerUrl
           ? {
-            label: 'View Explorer',
-            onClick: () => window.open(explorerUrl, '_blank'),
-          }
+              label: 'View Explorer',
+              onClick: () => window.open(explorerUrl, '_blank'),
+            }
           : undefined,
       });
     }
@@ -116,9 +116,9 @@ export function useWeb3Toast({
         duration: 5000,
         action: explorerUrl
           ? {
-            label: 'View Explorer ↗',
-            onClick: () => window.open(explorerUrl, '_blank'),
-          }
+              label: 'View Explorer ↗',
+              onClick: () => window.open(explorerUrl, '_blank'),
+            }
           : undefined,
       });
 
@@ -145,7 +145,7 @@ export function useWeb3Toast({
           description: isUserRejected
             ? 'You declined the transaction in your wallet.'
             : activeError?.message?.slice(0, 100) ||
-            'Transaction execution reverted.',
+              'Transaction execution reverted.',
           duration: 5000,
         },
       );
