@@ -21,19 +21,49 @@ export function useWeb3Toast({
   const { chainId } = useAccount();
   const toastIdRef = useRef<string | number | null>(null);
 
-  // Wait for transaction mining/confirmation
+  // Track chainId & hash when the transaction is triggered for the FIRST TIME
+  const initialChainIdRef = useRef<number | undefined>(chainId);
+  const processedHashes = useRef<Set<string>>(new Set());
+
+  // Helper function to safely clean up current toast reference
+  const dismissActiveToast = () => {
+    if (toastIdRef.current !== null) {
+      toast.dismiss(toastIdRef.current);
+      toastIdRef.current = null;
+    }
+  };
+
+  // 0. RESET ALL TOASTS ON CHAIN SWITCH
+  useEffect(() => {
+    dismissActiveToast();
+  }, [chainId]);
+
+  // Lock chainId when a new txhash actually appears
+  useEffect(() => {
+    if (txhash) {
+      initialChainIdRef.current = chainId;
+    }
+  }, [txhash, chainId]);
+
+  // Only run query receipt if txhash exists AND current chain matches the submission chain
+  const isChainMatched = chainId === initialChainIdRef.current;
+
   const {
     isLoading: isConfirming,
     isSuccess,
     isError: isTxError,
     error: txError,
   } = useWaitForTransactionReceipt({
-    hash: txhash,
+    hash: isChainMatched ? txhash : undefined,
+    chainId: initialChainIdRef.current,
   });
 
-  // 1. User Signature Pending (Metamask Popup Open)
+  // 1. User Signature Pending (Wallet extension popup open)
   useEffect(() => {
-    if (isPending) {
+    if (isPending && !error && !isTxError) {
+      // Dismiss any existing toast before spawning a new signature loading toast
+      dismissActiveToast();
+
       toastIdRef.current = toast.loading(
         `Confirming ${actionName} in wallet...`,
         {
@@ -42,14 +72,17 @@ export function useWeb3Toast({
         },
       );
     }
-  }, [isPending, actionName]);
+  }, [isPending, error, isTxError, actionName]);
 
-  // 2. Transaction Submitted to Mempool (Waiting for Block Mining)
+  // 2. Transaction Submitted to Mempool (Waiting for on-chain block mining)
   useEffect(() => {
-    if (txhash && isConfirming) {
-      const explorerUrl = getExplorerTxUrl({ chainId, txhash });
+    if (txhash && isConfirming && isChainMatched) {
+      const explorerUrl = getExplorerTxUrl({
+        chainId: initialChainIdRef.current,
+        txhash,
+      });
 
-      toast.loading(`${actionName} Submitted!`, {
+      toastIdRef.current = toast.loading(`${actionName} Submitted!`, {
         id: toastIdRef.current ?? undefined,
         description: 'Waiting for block confirmation on-chain...',
         action: explorerUrl
@@ -60,12 +93,22 @@ export function useWeb3Toast({
           : undefined,
       });
     }
-  }, [txhash, isConfirming, chainId, actionName]);
+  }, [txhash, isConfirming, isChainMatched, actionName]);
 
   // 3. Transaction Success (Mined)
   useEffect(() => {
-    if (txhash && isSuccess) {
-      const explorerUrl = getExplorerTxUrl({ chainId, txhash });
+    if (
+      txhash &&
+      isSuccess &&
+      isChainMatched &&
+      !processedHashes.current.has(txhash)
+    ) {
+      processedHashes.current.add(txhash);
+
+      const explorerUrl = getExplorerTxUrl({
+        chainId: initialChainIdRef.current,
+        txhash,
+      });
 
       toast.success(`${actionName} Successful! 🎉`, {
         id: toastIdRef.current ?? undefined,
@@ -78,22 +121,30 @@ export function useWeb3Toast({
             }
           : undefined,
       });
+
+      toastIdRef.current = null;
     }
-  }, [txhash, isSuccess, chainId, actionName]);
+  }, [txhash, isSuccess, isChainMatched, actionName]);
 
-  // 4. Transaction Rejected / Reverted
+  // 4. Transaction Rejected / Reverted / Execution Error
   useEffect(() => {
-    if (error || isTxError) {
-      const rawError = error || txError;
-      const isUserRejected = rawError?.message?.includes('User rejected');
+    const activeError = error || txError;
 
+    if (activeError) {
+      const isUserRejected =
+        activeError?.message?.toLowerCase().includes('user rejected') ||
+        activeError?.message?.toLowerCase().includes('user denied');
+
+      // Force-dismiss loading toast first to prevent stuck pending toast
+      dismissActiveToast();
+
+      // Spawn standalone error toast (do NOT reuse id to prevent state collision)
       toast.error(
         isUserRejected ? 'Transaction Rejected' : `${actionName} Failed ❌`,
         {
-          id: toastIdRef.current ?? undefined,
           description: isUserRejected
             ? 'You declined the transaction in your wallet.'
-            : rawError?.message?.slice(0, 100) ||
+            : activeError?.message?.slice(0, 100) ||
               'Transaction execution reverted.',
           duration: 5000,
         },
