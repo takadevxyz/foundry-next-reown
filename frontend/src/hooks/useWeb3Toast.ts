@@ -56,6 +56,9 @@ export function useWeb3Toast({
   } = useWaitForTransactionReceipt({
     hash: isChainMatched ? txhash : undefined,
     chainId: initialChainIdRef.current,
+    query: {
+      enabled: isChainMatched && Boolean(txhash),
+    },
   });
 
   // 1. User Signature Pending (Wallet extension popup open)
