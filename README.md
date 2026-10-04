@@ -87,6 +87,20 @@ forge build
 forge test -vvvv
 ```
 
+### Auto-Generating Type-Safe Web3 Hooks
+
+This project uses `@wagmi/cli` with the foundry plugin to automatically read Foundry artifacts (contracts/out) and generate React hooks in frontend/src/lib/generated.ts.
+
+Whenever you update your Solidity contracts, compile them first and run the codegen command:
+
+```bash
+# 1. Recompile contracts
+cd contracts && forge build
+
+# 2. Run Wagmi CLI generator (from root or frontend folder)
+pnpm --filter frontend wagmi
+```
+
 ### Running the Frontend dApp
 
 Start the Next.js development server with Turbopack from the root or inside the frontend folder:
@@ -99,20 +113,72 @@ Open http://localhost:3000 in your browser to view the dApp interface.
 
 ## Features
 
-- Custom Chain Support: Configured for Kryvora Network Testnet via explicit RPC transport mapping.
+- **Custom Chain Support**: Configured for Kryvora Network Testnet via explicit RPC transport mapping.
 
 ```typescript
-frontend / lib / config.ts;
+frontend / src / lib / networks.ts;
 
-export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [
-  kryvora_network_testnet,
-  sepolia, // Add new chain here
+export const networksList = [kryvora_network_testnet, sepolia, <Add_New_Chain_Here>] as [
+  AppKitNetwork,
+  ...AppKitNetwork[],
 ];
 ```
 
-- Custom Balance Reader: Overcomes internal Reown indexer gaps for custom chains by reading live balances directly via Wagmi's useBalance.
-- Message Signing: Built-in components for wallet signature.
-- Optimized Polling: Dynamic block tracking powered by TanStack Query and Wagmi actions.
+- **Custom Balance Reader**: Overcomes internal Reown indexer gaps for custom chains by reading live balances directly via Wagmi's useBalance.
+- **Message Signing**: Built-in components for wallet signature.
+- **Optimized Polling**: Dynamic block tracking powered by TanStack Query and Wagmi actions.
+- **Multi-Chain & Fallback RPC Support**: Resilient provider configuration supporting custom RPC fallbacks for testnets and mainnets (Sepolia, Kryvora, etc.).
+
+```typescript
+frontend/src/lib/wagmi.ts -> dynamicTransports
+
+if (chainId === 11155111) {
+  rpcUrls.push(
+    'https://sepolia.gateway.tenderly.co',
+    'https://api.zan.top/eth-sepolia',
+    // Add_New_RPC_Here
+  );
+};
+```
+
+- **Web3 Notification System (`useWeb3Toast`)**: Real-time lifecycle feedback powered by Sonner for wallet approvals, mempool submissions, block confirmations, and wallet rejections with cross-chain isolation.
+
+```typescript
+import { useWeb3Toast } from '@/hooks/useWeb3Toast';
+
+// Automatically handles loading, success (with explorer link), and error/rejection toasts
+useWeb3Toast({
+  txhash,
+  isPending,
+  error,
+  actionName: 'Increment Counter',
+});
+```
+
+- **Auto-Generated Contract Hooks**: Type-safe, auto-generated React hooks via `@wagmi/cli` for seamless contract read/write operations and automatic query invalidation.
+
+```typescript
+frontend / wagmi.config.ts;
+
+export default defineConfig({
+  out: './src/lib/generated.ts',
+  contracts: [],
+  plugins: [
+    foundry({
+      project: '../contracts',
+      forge: {
+        build: false,
+      },
+      // Explicitly include contracts to generate ABIs & hooks (from contracts/out).
+      // Avoids bloat by preventing auto-generation for standard dependencies/libraries.
+      include: ['Counter.sol/**'],
+    }),
+    react(),
+  ],
+});
+```
+
+- **Dynamic Explorer Resolution**: Automated block explorer URL generator based on active network context (`getExplorerTxUrl`).
 
 ## Custom Development & Services
 
