@@ -89,7 +89,7 @@ forge test -vvvv
 
 ### Auto-Generating Type-Safe Web3 Hooks
 
-This project uses ```@wagmi/cli``` with the foundry plugin to automatically read Foundry artifacts (contracts/out) and generate React hooks in frontend/src/lib/generated.ts.
+This project uses `@wagmi/cli` with the foundry plugin to automatically read Foundry artifacts (contracts/out) and generate React hooks in frontend/src/lib/generated.ts.
 
 Whenever you update your Solidity contracts, compile them first and run the codegen command:
 
@@ -140,6 +140,7 @@ if (chainId === 11155111) {
   );
 };
 ```
+
 - **Web3 Notification System (`useWeb3Toast`)**: Real-time lifecycle feedback powered by Sonner for wallet approvals, mempool submissions, block confirmations, and wallet rejections with cross-chain isolation.
 
 ```typescript
@@ -150,14 +151,14 @@ useWeb3Toast({
   txhash,
   isPending,
   error,
-  actionName: "Increment Counter"
+  actionName: 'Increment Counter',
 });
 ```
 
 - **Auto-Generated Contract Hooks**: Type-safe, auto-generated React hooks via `@wagmi/cli` for seamless contract read/write operations and automatic query invalidation.
 
 ```typescript
-frontend/wagmi.config.ts
+frontend / wagmi.config.ts;
 
 export default defineConfig({
   out: './src/lib/generated.ts',
@@ -176,6 +177,7 @@ export default defineConfig({
   ],
 });
 ```
+
 - **Dynamic Explorer Resolution**: Automated block explorer URL generator based on active network context (`getExplorerTxUrl`).
 
 ## Custom Development & Services
