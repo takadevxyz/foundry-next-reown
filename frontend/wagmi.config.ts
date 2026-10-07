@@ -1,19 +1,21 @@
-import { defineConfig } from '@wagmi/cli';
-import { foundry, react } from '@wagmi/cli/plugins';
+import { defineConfig } from '@wagmi/cli'
+import { react } from '@wagmi/cli/plugins'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
-export default defineConfig({
-  out: './src/lib/generated.ts',
-  contracts: [],
-  plugins: [
-    foundry({
-      project: '../contracts',
-      forge: {
-        build: false,
-      },
-      // Explicitly include contracts to generate ABIs & hooks (from contracts/out).
-      // Avoids bloat by preventing auto-generation for standard dependencies/libraries.
-      include: ['Counter.sol/**'],
-    }),
-    react(),
-  ],
-});
+const contractsDir = '../contracts'
+const names = ['MockVault', 'MockERC20', 'Counter']
+
+export default defineConfig(
+  names.map((name) => {
+    const artifact = JSON.parse(
+      readFileSync(join(contractsDir, 'out', `${name}.sol`, `${name}.json`), 'utf-8'),
+    )
+
+    return {
+      out: `./src/lib/generated/${name}.ts`,
+      contracts: [{ name, abi: artifact.abi }],
+      plugins: [react()],
+    }
+  }),
+)

@@ -3,7 +3,7 @@
 import {
   useWriteCounterIncrement,
   useReadCounterNumber,
-} from '@/lib/generated';
+} from '@/lib/generated/Counter';
 import { useWeb3Toast } from '@/hooks/useWeb3Toast';
 import { useAppKitNetwork } from '@reown/appkit/react';
 import { getContractAddresses } from '@/lib/contracts';
