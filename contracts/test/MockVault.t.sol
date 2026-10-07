@@ -22,9 +22,11 @@ contract TestMockERC20 is Test {
     }
 
     function test_execute() public {
-        IERC20(address(_erc20Contract)).approve(address(_vaultContract), 10e18);
+        IERC20(address(_erc20Contract)).approve(address(_vaultContract), 20e18);
 
         uint256 shares = _vaultContract.deposit(10e18, address(this));
+        _vaultContract.simulateYield(5e18);
+        
         uint256 assets = _vaultContract.redeem(shares, address(this), address(this));
         console.log(shares, assets);
     }
