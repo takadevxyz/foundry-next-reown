@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     useReadMockVaultTotalAssets,
     useReadMockVaultConvertToShares,
     useWriteMockVaultDeposit,
     useWriteMockVaultRedeem,
-    useSimulateMockVaultDeposit
+    useSimulateMockVaultDeposit,
+    useReadMockVaultSymbol
 } from '@/lib/generated/MockVault';
 import {
     useReadMockErc20BalanceOf,
     useWriteMockErc20Approve,
-    useSimulateMockErc20Approve
+    useSimulateMockErc20Approve,
+    useReadMockErc20Symbol
 } from '@/lib/generated/MockERC20';
-import { useAccount } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, formatEther } from 'viem';
 import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import { getContractAddresses } from '@/lib/contracts';
@@ -22,46 +24,54 @@ export function VaultDashboard() {
     const [depositAmount, setDepositAmount] = useState('');
     const [redeemShares, setRedeemShares] = useState('');
 
+    const vaultAddress = getContractAddresses({ chainId: chainId as number, key: "vault" });
+    const usdcm = getContractAddresses({ chainId: chainId as number, key: "usdcm" });
+
     // 1. Read Contract Data
-    const { data: totalAssets, refetch: refetchTotalAssets } = useReadMockVaultTotalAssets();
+    const { data: totalAssets, refetch: refetchTotalAssets } = useReadMockVaultTotalAssets({address: vaultAddress});
     const { data: userBalance, refetch: refetchBalance } = useReadMockErc20BalanceOf({
         args: address ? [address as `0x${string}`] : undefined,
+        address: usdcm
     });
+    const {data: symbolAsset} = useReadMockErc20Symbol({address: usdcm});
 
     // 2. Write Contract Hooks
-    const { writeContract: approveToken } = useWriteMockErc20Approve();
-    const { writeContract: depositVault } = useWriteMockVaultDeposit();
-    const { mutate: redeemVault } = useWriteMockVaultRedeem();
+    const { mutate: approveToken, data: approveHash, isPending: isApprovePending } = useWriteMockErc20Approve();
+    const { mutate: depositVault, data: depositHash, isPending: isDepositPending } = useWriteMockVaultDeposit();
+    const { mutate: redeemVault, data: redeemHash, isPending: isRedeemPending } = useWriteMockVaultRedeem();
 
-    if (!isConnected) {
-        return <div className="p-6 text-center text-gray-500">Please connect your wallet first to access Vault.</div>;
-    }
+    const {isSuccess: isApproveSuccess} = useWaitForTransactionReceipt({hash: approveHash});
+    const {isSuccess: isDepositSuccess} = useWaitForTransactionReceipt({hash: depositHash});
 
-    const vaultAddress = getContractAddresses({ chainId: chainId as number, key: "vault"});
-    const usdcm = getContractAddresses({chainId: chainId as number, key: "usdcm"});
+    useEffect(() => {
+        if(isDepositSuccess){
+            refetchTotalAssets();
+            refetchBalance();
+            setDepositAmount('');
+        }
+    },[isDepositSuccess, refetchTotalAssets, refetchBalance])
 
-    const handleApproveAndDeposit = async () => {
+    const handleApproveAndDeposit = () => {
         if (!depositAmount) return;
         const parsedAmount = parseEther(depositAmount);
 
         approveToken({
             address: usdcm,
             args: [vaultAddress , parsedAmount],
-        }, {
-            onSuccess: () => {
-                depositVault({
-                    address: vaultAddress,
-                    args: [parsedAmount, address as `0x${string}`],
-                }, {
-                    onSuccess: () => {
-                        refetchTotalAssets();
-                        refetchBalance();
-                        setDepositAmount('');
-                    }
-                });
-            }
+            chainId: chainId as number
         });
     };
+
+    useEffect(() => {
+        if (isApproveSuccess && depositAmount) {
+            const parsedAmount = parseEther(depositAmount);
+            depositVault({
+                address: vaultAddress,
+                args: [parsedAmount, address as `0x${string}`],
+                chainId: chainId as number,
+            });
+        }
+    }, [isApproveSuccess, depositAmount, vaultAddress, address, depositVault]);
 
     const handleRedeem = () => {
         if (!redeemShares) return;
@@ -79,6 +89,10 @@ export function VaultDashboard() {
         });
     };
 
+    if (!isConnected) {
+        return <div className="p-6 text-center text-gray-500">Please connect your wallet first to access Vault.</div>;
+    }
+
     return (
         <div className="mt-5 p-4 bg-neutral-900 rounded-lg text-white">
             <h2 className="text-lg font-semibold mb-2">ERC-4626 Vault Dashboard</h2>
@@ -87,11 +101,11 @@ export function VaultDashboard() {
             <div className="grid grid-cols-2 gap-4 bg-neutral-900 p-4 rounded-lg">
                 <div>
                     <p className="text-sm text-gray-500">Total Vault Assets</p>
-                    <p className="text-lg font-semibold">{totalAssets ? formatEther(totalAssets) : '0'} MOCK</p>
+                    <p className="text-lg font-semibold">{totalAssets ? formatEther(totalAssets) : '0'} {symbolAsset}</p>
                 </div>
                 <div>
                     <p className="text-sm text-gray-500">Your Token Balance</p>
-                    <p className="text-lg font-semibold">{userBalance ? formatEther(userBalance) : '0'} MOCK</p>
+                    <p className="text-lg font-semibold">{userBalance ? formatEther(userBalance) : '0'} {symbolAsset}</p>
                 </div>
             </div>
 
