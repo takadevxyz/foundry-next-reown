@@ -5,7 +5,8 @@ import {
     useWriteMockVaultDeposit,
     useWriteMockVaultRedeem,
     useSimulateMockVaultDeposit,
-    useReadMockVaultSymbol
+    useReadMockVaultSymbol,
+    useReadMockVaultBalanceOf
 } from '@/lib/generated/MockVault';
 import {
     useReadMockErc20BalanceOf,
@@ -39,6 +40,8 @@ export function VaultDashboard() {
         args: address && vaultAddress ? [address as `0x${string}`, vaultAddress as `0x${string}`] : undefined,
         address: usdcm
     })
+    const { data: userVaultBalance, refetch: refetchVaultBalance } = useReadMockVaultBalanceOf({ address: vaultAddress, args: address ? [address as `0x${string}`] : undefined })
+    const {data: symbolVault} = useReadMockVaultSymbol({address: vaultAddress});
 
     // 2. Write Contract Hooks
     const { mutate: approveToken, data: approveHash, isPending: isApprovePending } = useWriteMockErc20Approve();
@@ -54,9 +57,10 @@ export function VaultDashboard() {
             refetchTotalAssets();
             refetchBalance();
             refetchAllowance();
+            refetchVaultBalance();
             setDepositAmount('');
         }
-    }, [isDepositSuccess, refetchTotalAssets, refetchBalance, refetchAllowance])
+    }, [isDepositSuccess, refetchTotalAssets, refetchBalance, refetchAllowance, refetchVaultBalance])
 
     useEffect(() => {
         if (isApproveSuccess) refetchAllowance().then(() => depositVault({
@@ -110,9 +114,10 @@ export function VaultDashboard() {
         if(isRedeemSuccess){
             refetchTotalAssets();
             refetchBalance();
+            refetchVaultBalance();
             setRedeemShares('')
         }
-    }, [isRedeemSuccess, refetchTotalAssets, refetchBalance]);
+    }, [isRedeemSuccess, refetchTotalAssets, refetchBalance, refetchVaultBalance]);
 
     if (!isConnected) {
         return <div className="p-6 text-center text-gray-500">Please connect your wallet first to access Vault.</div>;
@@ -123,7 +128,7 @@ export function VaultDashboard() {
             <h2 className="text-lg font-semibold mb-2">ERC-4626 Vault Dashboard</h2>
 
             {/* Vault Stats */}
-            <div className="grid grid-cols-2 gap-4 bg-neutral-900 p-4 rounded-lg">
+            <div className="grid grid-cols-3 gap-4 bg-neutral-900 p-4 rounded-lg">
                 <div>
                     <p className="text-sm text-gray-500">Total Vault Assets</p>
                     <p className="text-lg font-semibold">{totalAssets ? formatEther(totalAssets) : '0'} {symbolAsset}</p>
@@ -131,6 +136,10 @@ export function VaultDashboard() {
                 <div>
                     <p className="text-sm text-gray-500">Your Token Balance</p>
                     <p className="text-lg font-semibold">{userBalance ? formatEther(userBalance) : '0'} {symbolAsset}</p>
+                </div>
+                <div>
+                    <p className="text-sm text-gray-500">Your Vault Balance</p>
+                    <p className="text-lg font-semibold">{userVaultBalance ? formatEther(userVaultBalance) : '0'} {symbolVault}</p>
                 </div>
             </div>
 
