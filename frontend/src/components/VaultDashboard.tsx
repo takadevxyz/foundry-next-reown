@@ -94,10 +94,11 @@ export function VaultDashboard() {
         }
     };
 
+
+    const parsedShares = redeemShares ? parseEther(redeemShares) : BigInt(0);
+    const isButtonRedeemDisabled = isRedeemPending || !redeemShares || parsedShares === BigInt(0);
     const handleRedeem = () => {
         if (!redeemShares) return;
-        const parsedShares = parseEther(redeemShares);
-
         redeemVault({
             address: vaultAddress,
             args: [parsedShares, address as `0x${string}`, address as `0x${string}`],
@@ -170,8 +171,9 @@ export function VaultDashboard() {
                     <button
                         onClick={handleRedeem}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-neutral-700 text-white font-medium rounded transition cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
+                        disabled={isButtonRedeemDisabled}
                     >
-                        Redeem
+                        {isRedeemPending ? "Redeeming" : "Redeem"}
                     </button>
                 </div>
             </div>
