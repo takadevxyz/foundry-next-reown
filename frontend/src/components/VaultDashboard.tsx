@@ -11,7 +11,8 @@ import {
     useReadMockErc20BalanceOf,
     useWriteMockErc20Approve,
     useSimulateMockErc20Approve,
-    useReadMockErc20Symbol
+    useReadMockErc20Symbol,
+    useReadMockErc20Allowance
 } from '@/lib/generated/MockERC20';
 import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, formatEther } from 'viem';
@@ -34,6 +35,10 @@ export function VaultDashboard() {
         address: usdcm
     });
     const {data: symbolAsset} = useReadMockErc20Symbol({address: usdcm});
+    const {data: allowance, refetch: refetchAllowance} = useReadMockErc20Allowance({
+        args: address && vaultAddress ? [address as `0x${string}`, vaultAddress as `0x${string}`] : undefined,
+        address: usdcm
+    })
 
     // 2. Write Contract Hooks
     const { mutate: approveToken, data: approveHash, isPending: isApprovePending } = useWriteMockErc20Approve();
@@ -48,31 +53,46 @@ export function VaultDashboard() {
         if(isDepositSuccess){
             refetchTotalAssets();
             refetchBalance();
+            refetchAllowance();
             setDepositAmount('');
         }
-    },[isDepositSuccess, refetchTotalAssets, refetchBalance])
-
-    const handleApproveAndDeposit = () => {
-        if (!depositAmount) return;
-        const parsedAmount = parseEther(depositAmount);
-
-        approveToken({
-            address: usdcm,
-            args: [vaultAddress , parsedAmount],
-            chainId: chainId as number
-        });
-    };
+    }, [isDepositSuccess, refetchTotalAssets, refetchBalance, refetchAllowance])
 
     useEffect(() => {
-        if (isApproveSuccess && depositAmount) {
-            const parsedAmount = parseEther(depositAmount);
+        if (isApproveSuccess) refetchAllowance().then(() => depositVault({
+            address: vaultAddress,
+            args: [parsedAmount, address as `0x${string}`],
+            chainId: chainId as number,
+        }))
+    }, [isApproveSuccess])
+
+    const parsedAmount = depositAmount ? parseEther(depositAmount) : BigInt(0)
+    const needsApproval = allowance  !== undefined && allowance < parsedAmount;
+    const getButtonTextDeposit = () => {
+        if(isApprovePending) return 'Approving...';
+        if(isDepositPending) return 'Depositing...';
+        if(needsApproval) return 'Approve';
+        return 'Deposit';
+    }
+    const isLoading = isApprovePending || isDepositPending;
+    const isButtonDisabled = isLoading || !depositAmount || parsedAmount === BigInt(0)
+    const handleApproveAndDeposit = () => {
+        if (!depositAmount) return;
+
+        if(needsApproval){
+            approveToken({
+                address: usdcm,
+                args: [vaultAddress , parsedAmount],
+                chainId: chainId as number
+            });
+        }else {
             depositVault({
                 address: vaultAddress,
                 args: [parsedAmount, address as `0x${string}`],
                 chainId: chainId as number,
             });
         }
-    }, [isApproveSuccess, depositAmount, vaultAddress, address, depositVault]);
+    };
 
     const handleRedeem = () => {
         if (!redeemShares) return;
@@ -84,7 +104,7 @@ export function VaultDashboard() {
             chainId: chainId as number
         });
     };
-    
+
     useEffect(() => {
         if(isRedeemSuccess){
             refetchTotalAssets();
@@ -128,8 +148,9 @@ export function VaultDashboard() {
                     <button
                         onClick={handleApproveAndDeposit}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-neutral-700 text-white font-medium rounded transition cursor-pointer disabled:cursor-not-allowed whitespace-nowrap"
+                        disabled={isButtonDisabled}
                     >
-                        Deposit
+                        {getButtonTextDeposit()}
                     </button>
                 </div>
             </div>
