@@ -42,6 +42,7 @@ export function VaultDashboard() {
 
     const {isSuccess: isApproveSuccess} = useWaitForTransactionReceipt({hash: approveHash});
     const {isSuccess: isDepositSuccess} = useWaitForTransactionReceipt({hash: depositHash});
+    const {isSuccess: isRedeemSuccess} = useWaitForTransactionReceipt({hash: redeemHash});
 
     useEffect(() => {
         if(isDepositSuccess){
@@ -80,14 +81,17 @@ export function VaultDashboard() {
         redeemVault({
             address: vaultAddress,
             args: [parsedShares, address as `0x${string}`, address as `0x${string}`],
-        }, {
-            onSuccess: () => {
-                refetchTotalAssets();
-                refetchBalance();
-                setRedeemShares('');
-            }
+            chainId: chainId as number
         });
     };
+    
+    useEffect(() => {
+        if(isRedeemSuccess){
+            refetchTotalAssets();
+            refetchBalance();
+            setRedeemShares('')
+        }
+    }, [isRedeemSuccess, refetchTotalAssets, refetchBalance]);
 
     if (!isConnected) {
         return <div className="p-6 text-center text-gray-500">Please connect your wallet first to access Vault.</div>;
