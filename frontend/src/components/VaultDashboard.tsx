@@ -118,7 +118,8 @@ export function VaultDashboard() {
                         placeholder="Amount to depositing"
                         value={depositAmount}
                         onChange={(e) => setDepositAmount(e.target.value)}
-                        className="px-3 py-2 w-full bg-neutral-800 text-white border border-neutral-700 rounded focus:outline-none focus:border-blue-500 font-mono text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        className="px-3 py-2 w-full bg-neutral-800 text-white border border-neutral-700 rounded focus:outline-none focus:border-blue-500 font-mono text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <button
                         onClick={handleApproveAndDeposit}
@@ -138,6 +139,7 @@ export function VaultDashboard() {
                         placeholder="Amount shares to redeeming"
                         value={redeemShares}
                         onChange={(e) => setRedeemShares(e.target.value)}
+                        onWheel={(e) => e.currentTarget.blur()}
                         className="px-3 py-2 w-full bg-neutral-800 text-white border border-neutral-700 rounded focus:outline-none focus:border-blue-500 font-mono text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                     <button
