@@ -19,6 +19,7 @@ import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, formatEther } from 'viem';
 import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import { getContractAddresses } from '@/lib/contracts';
+import { useWeb3Toast } from '@/hooks/useWeb3Toast';
 
 export function VaultDashboard() {
     const { address, isConnected } = useAppKitAccount();
@@ -44,13 +45,34 @@ export function VaultDashboard() {
     const {data: symbolVault} = useReadMockVaultSymbol({address: vaultAddress});
 
     // 2. Write Contract Hooks
-    const { mutate: approveToken, data: approveHash, isPending: isApprovePending } = useWriteMockErc20Approve();
-    const { mutate: depositVault, data: depositHash, isPending: isDepositPending } = useWriteMockVaultDeposit();
-    const { mutate: redeemVault, data: redeemHash, isPending: isRedeemPending } = useWriteMockVaultRedeem();
+    const { mutate: approveToken, data: approveHash, isPending: isApprovePending, error: errorApprove } = useWriteMockErc20Approve();
+    const { mutate: depositVault, data: depositHash, isPending: isDepositPending, error: errorVaultDeposit } = useWriteMockVaultDeposit();
+    const { mutate: redeemVault, data: redeemHash, isPending: isRedeemPending, error: errorVaultRedeem } = useWriteMockVaultRedeem();
 
     const {isSuccess: isApproveSuccess} = useWaitForTransactionReceipt({hash: approveHash});
     const {isSuccess: isDepositSuccess} = useWaitForTransactionReceipt({hash: depositHash});
     const {isSuccess: isRedeemSuccess} = useWaitForTransactionReceipt({hash: redeemHash});
+
+    useWeb3Toast({
+        txhash: approveHash,
+        isPending: isApprovePending,
+        error: errorApprove,
+        actionName: "Approve Token"
+    })
+
+    useWeb3Toast({
+        txhash: depositHash,
+        isPending: isDepositPending,
+        error: errorVaultDeposit,
+        actionName: "Deposit Token"
+    })
+
+    useWeb3Toast({
+        txhash: redeemHash,
+        isPending: isRedeemPending,
+        error: errorVaultRedeem,
+        actionName: "Redeem Shares"
+    })
 
     useEffect(() => {
         if(isDepositSuccess){
