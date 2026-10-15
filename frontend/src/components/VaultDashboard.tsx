@@ -20,6 +20,7 @@ import { parseEther, formatEther } from 'viem';
 import { useAppKitAccount, useAppKitNetwork } from '@reown/appkit/react';
 import { getContractAddresses } from '@/lib/contracts';
 import { useWeb3Toast } from '@/hooks/useWeb3Toast';
+import { useVaultMulltical } from '@/hooks/useVaultMulticall';
 
 export function VaultDashboard() {
     const { address, isConnected } = useAppKitAccount();
@@ -30,19 +31,7 @@ export function VaultDashboard() {
     const vaultAddress = getContractAddresses({ chainId: chainId as number, key: "vault" });
     const usdcm = getContractAddresses({ chainId: chainId as number, key: "usdcm" });
 
-    // 1. Read Contract Data
-    const { data: totalAssets, refetch: refetchTotalAssets } = useReadMockVaultTotalAssets({address: vaultAddress});
-    const { data: userBalance, refetch: refetchBalance } = useReadMockErc20BalanceOf({
-        args: address ? [address as `0x${string}`] : undefined,
-        address: usdcm
-    });
-    const {data: symbolAsset} = useReadMockErc20Symbol({address: usdcm});
-    const {data: allowance, refetch: refetchAllowance} = useReadMockErc20Allowance({
-        args: address && vaultAddress ? [address as `0x${string}`, vaultAddress as `0x${string}`] : undefined,
-        address: usdcm
-    })
-    const { data: userVaultBalance, refetch: refetchVaultBalance } = useReadMockVaultBalanceOf({ address: vaultAddress, args: address ? [address as `0x${string}`] : undefined })
-    const {data: symbolVault} = useReadMockVaultSymbol({address: vaultAddress});
+    const {totalAssetVault, userBalanceVault, symbolVault, userTokenBalance, userTokenAllowance, symbolToken, refetchAll} = useVaultMulltical({vaultAddress: vaultAddress, tokenAddress: usdcm, userAddress: address as `0x${string}`})
 
     // 2. Write Contract Hooks
     const { mutate: approveToken, data: approveHash, isPending: isApprovePending, error: errorApprove } = useWriteMockErc20Approve();
@@ -76,24 +65,21 @@ export function VaultDashboard() {
 
     useEffect(() => {
         if(isDepositSuccess){
-            refetchTotalAssets();
-            refetchBalance();
-            refetchAllowance();
-            refetchVaultBalance();
+            refetchAll();
             setDepositAmount('');
         }
-    }, [isDepositSuccess, refetchTotalAssets, refetchBalance, refetchAllowance, refetchVaultBalance])
+    }, [isDepositSuccess, refetchAll])
 
     useEffect(() => {
-        if (isApproveSuccess) refetchAllowance().then(() => depositVault({
+        if (isApproveSuccess) refetchAll().then(() => depositVault({
             address: vaultAddress,
             args: [parsedAmount, address as `0x${string}`],
             chainId: chainId as number,
         }))
-    }, [isApproveSuccess])
+    }, [isApproveSuccess, refetchAll])
 
     const parsedAmount = depositAmount ? parseEther(depositAmount) : BigInt(0)
-    const needsApproval = allowance  !== undefined && allowance < parsedAmount;
+    const needsApproval = userTokenAllowance  !== undefined && userTokenAllowance < parsedAmount;
     const getButtonTextDeposit = () => {
         if(isApprovePending) return 'Approving...';
         if(isDepositPending) return 'Depositing...';
@@ -134,12 +120,10 @@ export function VaultDashboard() {
 
     useEffect(() => {
         if(isRedeemSuccess){
-            refetchTotalAssets();
-            refetchBalance();
-            refetchVaultBalance();
+            refetchAll();
             setRedeemShares('')
         }
-    }, [isRedeemSuccess, refetchTotalAssets, refetchBalance, refetchVaultBalance]);
+    }, [isRedeemSuccess, refetchAll]);
 
     if (!isConnected) {
         return <div className="p-6 text-center text-gray-500">Please connect your wallet first to access Vault.</div>;
@@ -153,15 +137,15 @@ export function VaultDashboard() {
             <div className="grid grid-cols-3 gap-4 bg-neutral-900 p-4 rounded-lg">
                 <div>
                     <p className="text-sm text-gray-500">Total Vault Assets</p>
-                    <p className="text-lg font-semibold">{totalAssets ? formatEther(totalAssets) : '0'} {symbolAsset}</p>
+                    <p className="text-lg font-semibold">{totalAssetVault ? formatEther(totalAssetVault) : '0'} {symbolToken}</p>
                 </div>
                 <div>
                     <p className="text-sm text-gray-500">Your Token Balance</p>
-                    <p className="text-lg font-semibold">{userBalance ? formatEther(userBalance) : '0'} {symbolAsset}</p>
+                    <p className="text-lg font-semibold">{userTokenBalance ? formatEther(userTokenBalance) : '0'} {symbolToken}</p>
                 </div>
                 <div>
                     <p className="text-sm text-gray-500">Your Vault Balance</p>
-                    <p className="text-lg font-semibold">{userVaultBalance ? formatEther(userVaultBalance) : '0'} {symbolVault}</p>
+                    <p className="text-lg font-semibold">{userBalanceVault ? formatEther(userBalanceVault) : '0'} {symbolVault}</p>
                 </div>
             </div>
 
