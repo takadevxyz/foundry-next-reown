@@ -213,7 +213,3 @@ If this template saved you hours of setup time, consider supporting the continuo
 ```
 
 - GitHub Sponsors: Star ⭐ this repo & share it with fellow Web3 devs!
-
-## License
-
-MIT

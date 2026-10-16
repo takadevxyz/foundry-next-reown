@@ -1,3 +1,6 @@
 @src/=contracts/src/
 @forge-std/=contracts/lib/forge-std/src/
 @openzeppelin/contracts/=contracts/lib/openzeppelin-contracts/contracts/
+@uniswap-v2-core/=contracts/src/v2-core/contracts/
+@uniswap-v2-periphery/=contracts/src/v2-periphery/contracts/
+@uniswap-solidity-lib/=contracts/src/solidity-lib/contracts/libraries/
