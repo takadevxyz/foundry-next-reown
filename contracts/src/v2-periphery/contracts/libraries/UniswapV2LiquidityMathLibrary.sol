@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.20;
 
-import "@src/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
-import "@src/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
-import "@src/solidity-lib/contracts/libraries/Babylonian.sol";
-import "@src/solidity-lib/contracts/libraries/FullMath.sol";
+import "@uniswap-v2-core/interfaces/IUniswapV2Pair.sol";
+import "@uniswap-v2-core/interfaces/IUniswapV2Factory.sol";
+import "@uniswap-solidity-lib/Babylonian.sol";
+import "@uniswap-solidity-lib/FullMath.sol";
 
 import "./SafeMath.sol";
 import "./UniswapV2Library.sol";
