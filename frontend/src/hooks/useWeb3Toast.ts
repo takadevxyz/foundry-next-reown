@@ -1,5 +1,3 @@
-'use client';
-
 import { toast } from 'sonner';
 import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import { useEffect, useRef } from 'react';
