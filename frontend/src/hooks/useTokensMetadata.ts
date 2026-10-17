@@ -24,7 +24,7 @@ export function useTokensMedata({tokens}: Tokens) {
         {address, abi: mockErc20Abi, functionName: 'name'},
     ])
 
-    const {data, isLoading, isError} = useReadContracts({contracts});
+    const {data, isLoading, isError, refetch} = useReadContracts({contracts});
     const tokensMetadata: TokenMetadata[] = tokenEntries.map(([key, address], index) => {
         const baseIdx = index * 3;
         const symbol = (data?.[baseIdx]?.result as string) || key.toUpperCase();
@@ -43,6 +43,7 @@ export function useTokensMedata({tokens}: Tokens) {
     return {
         tokens: tokensMetadata,
         isLoading,
-        isError
+        isError,
+        refetch
     }
 }
