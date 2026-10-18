@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const contractsDir = '../contracts'
-const names = ['MockVault', 'MockERC20', 'Counter', 'UniswapV2Router02']
+const names = ['MockVault', 'MockERC20', 'Counter', 'UniswapV2Router02', 'UniswapV2Factory']
 
 export default defineConfig(
   names.map((name) => {
